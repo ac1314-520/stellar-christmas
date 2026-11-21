@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="星屿藏馆 · 圣诞奇境：84 件私人泡泡玛特藏品，7 批拍立得，金色星尘圣诞树与可翻转的藏品明信片。" />
+  <meta property="og:title" content="星屿藏馆 · 圣诞奇境" />
+  <meta property="og:description" content="把 84 件藏品挂上一棵金色圣诞树。拖动旋转、展开照片墙、翻转每张藏品明信片。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ac1314-520.github.io/stellar-christmas/" />
+  <meta property="og:image" content="https://ac1314-520.github.io/stellar-christmas/assets/preview/og.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://ac1314-520.github.io/stellar-christmas/assets/preview/og.jpg" />
+  <meta name="theme-color" content="#050404" />
+  <title>星屿藏馆 · 圣诞奇境</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23050404'/%3E%3Cpath d='M32 8l6.5 16H51L38 33l5 16-11-8-11 8 5-16L8 24h12.5z' fill='%23cda96d'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./styles/main.css" />
+  <link rel="stylesheet" href="./styles/stellar-christmas.css" />
+  <script src="./vendor/three.min.js"></script>
+</head>
+<body data-theme="stellar">
+  <div class="bg-photo-layer" id="bg-warm"></div>
+  <div class="bg-photo-layer" id="bg-aurora"></div>
+  <div class="bg-radial-scrim"></div>
+  <div id="scene-container"></div>
+  <canvas id="stardust-canvas"></canvas>
+  <div class="festive-vignette"></div>
+
+  <!-- Entry -->
+  <div class="entry-screen" id="entry-screen">
+    <a class="entry-brand-crest" id="entry-brand-crest" href="https://ac1314-520.github.io/stellar-archive/#collection" target="_blank" rel="noopener noreferrer" aria-label="打开完整藏品馆">
+      <span class="brand-wordmark brand-wordmark--text"><b>星屿藏馆</b><em>STELLAR ARCHIVE</em></span>
+    </a>
+    <div class="entry-card">
+      <div class="entry-kicker" id="entry-kicker">✦ 2026 STELLAR CHRISTMAS ✦</div>
+      <h2 class="entry-title">星屿圣诞</h2>
+      <p class="entry-desc" id="entry-desc">
+        84 件私人藏品、7 批拍立得与一棵金色星尘圣诞树已就绪<br />
+        轻点下方，把晶晶的收藏挂进冬夜
+      </p>
+      <button class="entry-btn" id="btn-enter-magic" type="button">✦ 点亮星屿圣诞</button>
+    </div>
+  </div>
+
+  <!-- Hero title + themes + wordmark -->
+  <div class="title-wrap">
+    <h1 class="title-text" id="title-text">星屿圣诞</h1>
+    <div class="theme-bar" id="theme-bar" role="tablist" aria-label="圣诞树主题切换">
+      <button class="theme-pill active" data-theme="stellar" type="button">✦ 星屿黑金</button>
+      <button class="theme-pill" data-theme="classic" type="button">🌲 翡翠圣诞</button>
+      <button class="theme-pill" data-theme="aurora" type="button">❄ 极光雪夜</button>
+      <button class="theme-pill" data-theme="candy" type="button">🥂 香槟玫瑰</button>
+    </div>
+    <a class="brand-stage-crest" id="brand-stage-crest" href="https://ac1314-520.github.io/stellar-archive/#collection" target="_blank" rel="noopener noreferrer" aria-label="打开完整藏品馆">
+      <span class="brand-wordmark brand-wordmark--text"><b>星屿藏馆</b><em>STELLAR ARCHIVE</em></span>
+    </a>
+  </div>
+
+  <!-- Status -->
+  <div class="status-hud" id="status-hud">
+    <div class="status-row">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-label">状态: 星屿圣诞已就绪</span>
+    </div>
+    <div class="status-sub" id="status-sub">悬停卡片微倾 · 点击展开拍立得</div>
+  </div>
+
+  <!-- Music -->
+  <div class="music-pill" id="music-pill">
+    <button class="music-mini-btn" id="btn-track-next" type="button" title="切换内置圣诞曲目">⏭</button>
+    <span class="music-track-name" id="music-track-name">🔔 铃儿响叮当 Pop</span>
+    <button class="music-mini-btn" id="btn-upload-audio" type="button" title="导入本地 MP3/WAV 歌曲（仅本地播放）">🎧 选歌</button>
+  </div>
+  <input id="audio-input" type="file" accept="audio/*" />
+
+  <!-- Camera / gesture -->
+  <div class="cam-widget">
+    <div class="cam-box" id="cam-box" title="开启或关闭摄像头手势识别（仅浏览器本地运行）">
+      <svg class="snowflake-icon" id="snowflake-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="2" x2="12" y2="22" /><line x1="2" y1="12" x2="22" y2="12" />
+        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" /><line x1="19.07" y1="4.93" x2="4.93" y2="19.07" />
+        <polyline points="9 4 12 7 15 4" /><polyline points="9 20 12 17 15 20" />
+        <polyline points="4 9 7 12 4 15" /><polyline points="20 9 17 12 20 15" />
+      </svg>
+      <video id="cam-video" playsinline muted></video>
+      <canvas id="cam-overlay"></canvas>
+    </div>
+    <button class="cam-toggle-btn" id="cam-toggle-btn" type="button">OPEN</button>
+  </div>
+
+  <!-- Gallery context -->
+  <div class="gallery-pill" id="gallery-pill">
+    <span id="gallery-counter">1 / 12 · JJ-001 恋夏一族</span>
+    <span class="batch-pill" id="batch-label">第 1 / 7 批</span>
+    <button class="gallery-flip-btn" id="btn-flip-card" type="button">✉ 翻转明信片</button>
+  </div>
+
+  <!-- Dock -->
+  <div class="controls-dock">
+    <button class="dock-btn primary" id="btn-mode" type="button">✦ 展开照片墙</button>
+    <button class="dock-btn icon-only" id="btn-prev" type="button" title="上一张藏品">◀</button>
+    <button class="dock-btn icon-only" id="btn-next" type="button" title="下一张藏品">▶</button>
+    <span class="dock-sep"></span>
+    <button class="dock-btn" id="btn-firework" type="button">✦ 放烟花</button>
+    <button class="dock-btn" id="btn-all" type="button">❖ 全部 84 件</button>
+    <button class="dock-btn" id="btn-batch" type="button">⟳ 换一批 1/7</button>
+    <button class="dock-btn" id="btn-sfx" type="button">♪ 音效开</button>
+    <button class="dock-btn" id="btn-music" type="button">♫ 音乐</button>
+    <button class="dock-btn" id="btn-reset" type="button">↺ 复位</button>
+    <button class="dock-btn icon-only" id="btn-guide" type="button" title="交互与说明">?</button>
+  </div>
+
+  <!-- All collection -->
+  <div class="modal-backdrop collection-backdrop" id="collection-modal" role="dialog" aria-modal="true" aria-labelledby="collection-modal-title" hidden>
+    <div class="collection-card">
+      <div class="collection-header">
+        <div>
+          <div class="collection-kicker">THE COMPLETE ARCHIVE · 84 PIECES</div>
+          <h2 class="collection-title" id="collection-modal-title">全部藏品</h2>
+          <p class="collection-status" id="all-status">84 件藏品 · 7 批拍立得 · 每一件都有自己的编号</p>
+        </div>
+        <button class="modal-close" id="collection-close" type="button" aria-label="关闭全部藏品">&times;</button>
+      </div>
+      <div class="collection-toolbar">
+        <label class="collection-search">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg>
+          <input id="all-search" type="search" placeholder="搜索角色、系列或编号" autocomplete="off" aria-label="搜索全部藏品" />
+        </label>
+        <a class="collection-external" href="https://ac1314-520.github.io/stellar-archive/#collection" target="_blank" rel="noopener noreferrer">打开完整藏品馆 ↗</a>
+      </div>
+      <div class="all-grid" id="all-grid"></div>
+    </div>
+  </div>
+
+  <!-- Marquee -->
+  <div class="marquee-wrap">
+    <div class="marquee-track" id="marquee-track"></div>
+  </div>
+
+  <!-- Guide -->
+  <div class="modal-backdrop" id="guide-modal" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-title">✦ 星屿圣诞 · 交互说明</span>
+        <button class="modal-close" id="guide-close" type="button">&times;</button>
+      </div>
+      <ul class="guide-list">
+        <li class="guide-item"><span class="guide-emoji">🖼</span><div class="guide-desc"><strong>7 批 · 84 件藏品</strong><p>圣诞树上每次挂 12 件藏品，点「换一批」在 7 批之间切换；也可以打开「全部 84 件」，从完整藏品册里挑一件挂上树。</p></div></li>
+        <li class="guide-item"><span class="guide-emoji">✦</span><div class="guide-desc"><strong>展开照片墙 &amp; 翻转明信片</strong><p>点「展开照片墙」把 12 张拍立得铺成弧形；点中间的卡片可翻到背面，读到这件藏品的短篇小传。</p></div></li>
+        <li class="guide-item"><span class="guide-emoji">↔</span><div class="guide-desc"><strong>拖拽与缩放</strong><p>拖动旋转圣诞树，滚轮或双指缩放，双击夜空放一枚烟花。方向键可切换拍立得。</p></div></li>
+        <li class="guide-item"><span class="guide-emoji">❖</span><div class="guide-desc"><strong>完整藏品馆</strong><p>这是一次独立的圣诞展示，不会替换原来的星屿藏馆。可从「全部藏品」里打开完整 84 件藏品馆。</p></div></li>
+        <li class="guide-item"><span class="guide-emoji">©</span><div class="guide-desc"><strong>场景来源</strong><p>3D 粒子圣诞树与拍立得相册基于 <a href="https://github.com/Lone3m-tech/christmas-tree-3d" target="_blank" rel="noopener noreferrer">Lone3m-tech/christmas-tree-3d</a>（MIT）改造；照片与藏品文字来自晶晶的私人收藏。</p></div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

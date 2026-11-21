@@ -1,0 +1,43 @@
+MIT License
+
+Copyright (c) 2026 SimpleMkt
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Brand Assets Notice (`assets/brand/`)
+
+The MIT License above applies to all source code (`index.html`, `styles/`,
+`src/`, `server.mjs`) and the sample holiday images under `assets/bg/` and
+`assets/photos/`.
+
+The brand wordmark under `assets/brand/` (`simplemkt-wordmark-reverse.png`)
+is a proprietary brand asset of SimpleMkt, included solely for live
+demonstration and attribution in the original release. If you fork,
+redistribute, or deploy this project for your own product or brand, please
+replace the files in `assets/brand/` (and `BRAND_CONFIG` in `src/config.js`
+plus the corresponding page title) with your own brand assets.
+
+---
+
+This derivative project (Stellar Archive Christmas) retains the original MIT
+license and copyright notice above. The collection photographs, collection
+stories, and Stellar Archive branding are personal assets of 晶晶 and are not
+covered by the MIT license.

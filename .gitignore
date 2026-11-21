@@ -1,0 +1,19 @@
+# macOS & Editor
+.DS_Store
+**/.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Dependencies, env & temp
+node_modules/
+tmp/
+*.log
+.env
+.env.*
+!.env.example
+
+# Workspace-only metadata & local QA captures (kept out of open-source repo)
+runs/
+docs/
+project.yaml
