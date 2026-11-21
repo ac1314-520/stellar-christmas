@@ -73,11 +73,14 @@ export function createGestureController({
   updateGalleryCounter,
   updateStatus,
   showToast,
+  flipCurrentCard,
 }) {
   let mediaStream = null;
   let handsInstance = null;
   let camLoopId = null;
   let isStarting = false;
+  let lastFlipAt = 0;
+  let lastPointZ = null;
 
   function drawHandOverlay(landmarks) {
     const ctx = camOverlay.getContext('2d');
@@ -99,6 +102,7 @@ export function createGestureController({
       drawHandOverlay(null);
       state.lastHandX = null;
       state.gestureHoldFrames = 0;
+      lastPointZ = null;
       return;
     }
     const lm = multi[0];
@@ -113,7 +117,7 @@ export function createGestureController({
 
     if (gesture === 'open') {
       if (state.gestureHoldFrames >= 3 && state.mode !== 'exploded') {
-        setMode('exploded', '状态: ✋ 五指张开', '魔法已开启 · 左右挥手翻页');
+        setMode('exploded', '状态: ✋ 五指张开', '左右挥手翻页 · 单指轻点翻面');
       }
       if (state.lastHandX !== null && state.mode === 'exploded') {
         const dx = palmX - state.lastHandX;
@@ -132,13 +136,31 @@ export function createGestureController({
       state.lastHandX = null;
     } else if (gesture === 'point') {
       const tipX = 1 - lm[8].x;
-      if (state.lastHandX !== null) {
-        state.pokeVelocity += (tipX - state.lastHandX) * 0.42;
-        updateStatus('状态: ☝️ 单指戳动', '拨动圣诞树加速旋转 ✨', true);
+      const tipZ = lm[8].z;
+      if (state.mode === 'exploded') {
+        // In the photo wall a single pointed finger flips the centered
+        // Polaroid. Trigger once when the point starts, or on a deliberate
+        // forward poke so users can flip it back without changing gestures.
+        const now = performance.now();
+        const poke = lastPointZ !== null && lastPointZ - tipZ > 0.022;
+        if ((state.gestureHoldFrames === 1 || poke) && now - lastFlipAt > 750) {
+          lastFlipAt = now;
+          flipCurrentCard?.();
+          updateStatus('状态: ☝️ 单指轻点', '当前拍立得已翻面 · 再点一次翻回正面', true);
+        }
+        lastPointZ = tipZ;
+        state.lastHandX = null;
+      } else {
+        if (state.lastHandX !== null) {
+          state.pokeVelocity += (tipX - state.lastHandX) * 0.42;
+          updateStatus('状态: ☝️ 单指戳动', '拨动圣诞树加速旋转 ✨', true);
+        }
+        state.lastHandX = tipX;
+        lastPointZ = null;
       }
-      state.lastHandX = tipX;
     } else {
       state.lastHandX = null;
+      lastPointZ = null;
     }
   }
 
@@ -191,7 +213,7 @@ export function createGestureController({
       camVideo.style.display = 'block';
       camOverlay.style.display = 'block';
       camToggleBtn.textContent = 'CLOSE';
-      updateStatus('状态: 摄像头已开启', '伸出手掌体验魔法手势 ✨', false);
+      updateStatus('状态: 摄像头已开启', '张开 / 挥手 / 握拳 · 照片墙里单指轻点翻面', false);
 
       let busy = false;
       const processFrame = async () => {

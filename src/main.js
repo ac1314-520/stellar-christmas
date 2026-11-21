@@ -12,7 +12,7 @@ import { createAudioEngine } from './audio.js';
 import { createStardustOverlay } from './stardust.js';
 import { createTreeScene, SPIRAL_TURNS, TREE_BASE_RADIUS, TREE_HEIGHT } from './scene.js';
 import { createPolaroidManager } from './polaroids.js';
-import { createGestureController } from './gestures.js';
+import { createGestureController } from './gestures.js?v=20261122b';
 
 const THREE = window.THREE;
 
@@ -178,7 +178,7 @@ function setMode(newMode, reasonLabel, reasonSub) {
     galleryPill?.classList.add('visible');
     polaroidMgr.updateGalleryCounter();
     if (changed) audio.playSfx('explode');
-    updateStatus(reasonLabel || '状态: ✦ 照片墙展开', reasonSub || '点击中间卡片翻到明信片背面', true);
+    updateStatus(reasonLabel || '状态: ✦ 照片墙展开', reasonSub || '点击中间卡片或单指轻点翻到明信片背面', true);
   } else {
     state.targetExplode = 0;
     state.flippedCardIndex = -1;
@@ -202,7 +202,7 @@ function loadBatch(index, options = {}) {
   polaroidMgr.updateGalleryCounter();
   updateBatchUI();
   if (explode) {
-    setMode('exploded', '状态: ✦ 拍立得特写', '点击中间卡片翻到明信片背面');
+    setMode('exploded', '状态: ✦ 拍立得特写', '点击中间卡片或单指轻点翻到明信片背面');
   } else {
     setMode('tree', '状态: 星屿圣诞已就绪', '悬停卡片微倾 · 点击展开拍立得');
   }
@@ -211,7 +211,7 @@ function loadBatch(index, options = {}) {
 
 function stepCarousel(delta) {
   if (state.mode !== 'exploded') {
-    setMode('exploded', '状态: ✦ 照片墙展开', '点击中间卡片翻到明信片背面');
+    setMode('exploded', '状态: ✦ 照片墙展开', '点击中间卡片或单指轻点翻到明信片背面');
   }
   if (!polaroidMgr.polaroids.length) return;
   state.flippedCardIndex = -1;
@@ -312,6 +312,7 @@ createGestureController({
   updateGalleryCounter: polaroidMgr.updateGalleryCounter,
   updateStatus,
   showToast,
+  flipCurrentCard: flipCurrentCenterCard,
 });
 
 const raycaster = new THREE.Raycaster();
@@ -353,7 +354,7 @@ function handleTapPolaroid(clientX, clientY) {
   if (state.mode === 'tree') {
     state.carouselIndex = idx;
     state.flippedCardIndex = -1;
-    setMode('exploded', '状态: ✦ 拍立得特写', '再点中间卡片可翻到藏品小传');
+    setMode('exploded', '状态: ✦ 拍立得特写', '再点中间卡片或单指轻点翻到藏品小传');
   } else {
     const n = polaroidMgr.polaroids.length;
     const current = ((Math.round(state.carouselIndex) % n) + n) % n;
