@@ -12,7 +12,7 @@ import { createAudioEngine } from './audio.js';
 import { createStardustOverlay } from './stardust.js';
 import { createTreeScene, SPIRAL_TURNS, TREE_BASE_RADIUS, TREE_HEIGHT } from './scene.js';
 import { createPolaroidManager } from './polaroids.js';
-import { createGestureController } from './gestures.js?v=20261122b';
+import { createGestureController } from './gestures.js?v=20261122c';
 
 const THREE = window.THREE;
 

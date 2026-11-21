@@ -809,3 +809,28 @@ body.is-collection-open .collection-backdrop {
     font-size: 40px;
   }
 }
+
+/* Cross-link back to the permanent Stellar Archive. */
+.dock-btn--archive {
+  text-decoration: none;
+  color: rgba(231, 194, 147, 0.82);
+  white-space: nowrap;
+}
+
+.dock-btn--archive:hover {
+  color: var(--archive-gold-bright);
+}
+
+.entry-archive-link {
+  display: inline-block;
+  margin-top: 14px;
+  color: rgba(205, 169, 109, 0.7);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.entry-archive-link:hover {
+  color: var(--archive-gold-bright);
+}
